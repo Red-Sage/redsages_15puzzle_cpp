@@ -64,6 +64,7 @@ class PuzzleBoard
         void getRandomBoard();
         void permuteBoard();
         bool isValidBoard();
+        void moveDirection(int direction);
         
 
 };
@@ -83,8 +84,10 @@ void PuzzleBoard::print()
             std::cout<<_board[i*4+j]<<"  ";
         }
 
-        std::cout<<std::endl;
+        std::cout<<endl;
     }
+
+    std::cout<<"\n\n\n";
 }
 
 void PuzzleBoard::getRandomBoard()
@@ -175,4 +178,42 @@ bool PuzzleBoard::isValidBoard()
     } 
 
     return true;
+}
+
+void PuzzleBoard::moveDirection(int direction)
+{
+    // move blank tile up(0), right(1), down(2) or left(3) 
+    int blankLocation = find(_board, boardSize);
+    int newLocation = blankLocation;
+
+    switch(direction)
+    {
+        case 0:
+            if((blankLocation - boardCols) >= 0)
+            {
+                newLocation = blankLocation - boardCols;
+            }
+            break;
+        case 1:
+            if((blankLocation + 1) < (boardSize - 1))
+            {
+                newLocation = blankLocation + 1;
+            }
+            break;
+        case 2:
+            if((blankLocation + boardCols) < (boardSize - 1))
+            {
+                newLocation = blankLocation + boardCols;
+            }
+            break;
+        case 3:
+            if((blankLocation - 1) >= 0)
+            {
+                newLocation = blankLocation - 1;
+            }
+            break;
+    }   
+
+    swapTiles(_board, blankLocation, newLocation);
+    
 }
