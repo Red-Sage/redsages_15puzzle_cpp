@@ -8,8 +8,48 @@ using std::vector;
 using std::cout;
 using std::endl;
 using std::unique;
+using std::find;
 
 void resetBoard(vector<int>& board, int boardSize);
+int find(vector<int>& board, int value);
+void swapTiles(vector<int>& board, int idx1, int idx2);
+
+void resetBoard(vector<int>& board, int boardSize)
+{
+    board.clear();
+    
+    for(int i=1; i<=boardSize; ++i)
+    {
+        board.push_back(i);
+    }
+}
+
+int find(vector<int>& board, int value)
+{
+    int idx;
+    auto it = find(board.begin(), board.end(), value);
+    if(it != board.end())
+    {
+        idx = it-board.begin();
+    }
+    else
+    {
+        idx = -1;
+    }
+
+    return idx;
+}
+
+void swapTiles(vector<int>& board, int idx1, int idx2)
+{
+    if(idx1 != idx2)
+    {
+        board.at(idx1) = board.at(idx1) + board.at(idx2);
+        board.at(idx2) = board.at(idx1) - board.at(idx2);
+        board.at(idx1) = board.at(idx1) - board.at(idx2);
+    }
+
+}
 
 class PuzzleBoard
 {
@@ -29,16 +69,6 @@ class PuzzleBoard
 PuzzleBoard::PuzzleBoard()
 {
     resetBoard(_board, boardSize);
-}
-
-void resetBoard(vector<int>& board, int boardSize)
-{
-    board.clear();
-    
-    for(int i=1; i<=boardSize; ++i)
-    {
-        board.push_back(i);
-    }
 }
 
 void PuzzleBoard::print()
@@ -82,9 +112,7 @@ void PuzzleBoard::permutBoard()
     {
         idx = it - intList.begin();
         swapIdx = *it;
-        tempValue = _board.at(idx);
-        _board.at(idx) = _board.at(swapIdx);
-        _board.at(swapIdx) = tempValue;
+        swapTiles(_board, idx, swapIdx);
 
         cout<<*it<<" "; // For testing only
     }
@@ -94,15 +122,40 @@ void PuzzleBoard::permutBoard()
 
 bool PuzzleBoard::isValidBoard()
 {
-    bool isValid = false;
-
     //First a simple test for unique elements
     vector<int>::iterator it;
     it = unique(_board.begin(), _board.end());
 
     if(it != _board.end())
     {
-        return isValid;
+        return false;
     }
+
+    //Test to see if the permutation is odd (i.e. board is invalid)
+    vector<int> v = _board;
+    int blankLocation = find(_board, boardSize);
+    int moves = (boardSize - 1) - blankLocation;
+    int idx = 0;
+    int num_transpositions = 0;
+
+    for(int i=1; i <= boardSize; ++i) //i is the tile value, i-1 is the correct location
+    {
+        idx = find(v, i); // Where the number actually is
+        
+
+        if(idx+1 != i)
+        {
+            swapTiles(v, idx, i-1);
+            num_transpositions++;
+        }
+       
+       
+    }
+
+    if(num_transpositions % 2 != moves % 2)
+    {
+        return false;
+    } 
+
     return true;
 }

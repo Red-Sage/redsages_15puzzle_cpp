@@ -6,7 +6,7 @@ int main()
     
     PuzzleBoard board = PuzzleBoard();
     board.print();
-
+    cout<<board.isValidBoard()<<endl;
     board.permutBoard();
     cout<<board.isValidBoard()<<endl;
     board.print();
