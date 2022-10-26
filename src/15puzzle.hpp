@@ -55,12 +55,14 @@ class PuzzleBoard
 {
     private:
         const int boardSize = 16;
+        const int boardRows = 4;
+        const int boardCols = 4;
         vector<int> _board;
     public:
         PuzzleBoard();
         void print();
         void getRandomBoard();
-        void permutBoard();
+        void permuteBoard();
         bool isValidBoard();
         
 
@@ -85,12 +87,24 @@ void PuzzleBoard::print()
     }
 }
 
-//void PuzzleBoard::getRandomBoard()
-//{
+void PuzzleBoard::getRandomBoard()
+{
+    int count=0; //A safty to avoid infinite loop
+    do
+    {
+        if(count > 100)
+        {
+            //This code should never be reached but it guards aginast infinete loop
+            throw std::logic_error("Could not generate random board.");
+        }
+        resetBoard(_board, boardSize);
+        permuteBoard();
+        count++;
+    }
+    while(!isValidBoard());
+}
 
-//}
-
-void PuzzleBoard::permutBoard()
+void PuzzleBoard::permuteBoard()
 {
     
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -131,10 +145,13 @@ bool PuzzleBoard::isValidBoard()
         return false;
     }
 
-    //Test to see if the permutation is odd (i.e. board is invalid)
+    //Test to see if the permuteation is odd (i.e. board is invalid)
     vector<int> v = _board;
     int blankLocation = find(_board, boardSize);
-    int moves = (boardSize - 1) - blankLocation;
+    int row = blankLocation/boardRows;
+    int col = blankLocation - 4*row;
+    int moves = (boardRows-1)-row + (boardCols-1)-col;
+    
     int idx = 0;
     int num_transpositions = 0;
 
